@@ -15,6 +15,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "centos/7"
 
   config.ssh.forward_x11 = true
+  config.ssh.forward_agent = true
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -70,7 +71,9 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: "yum -y update"
 
   ## For masterless, mount your salt file root
-  config.vm.synced_folder "salt/roots/", "/srv"
+  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+  config.vm.synced_folder "salt\\roots", "/srv", type: "virtualbox"
+  #config.vm.synced_folder "./", "/srv/salt", id: "vagrant-root"
 
   config.vm.provision :salt do |salt|
 
