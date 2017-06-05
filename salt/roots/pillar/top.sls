@@ -1,3 +1,4 @@
 base:
   '*':
     - user
+    - system
