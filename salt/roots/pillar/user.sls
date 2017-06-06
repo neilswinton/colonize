@@ -6,6 +6,7 @@ users:
     bash_profile:
       environment:
         - EDITOR:  emacsclient
+        - TZ: "America/New_York"
       includes:
         - /home/juser/git/home/.bash_profile
     ssh:
