@@ -1,0 +1,12 @@
+
+# Prepend these settings because sshd takes the first setting it finds
+ChallengeResponseAuthentication no
+PasswordAuthentication no
+X11DisplayOffset 10
+X11Forwarding yes
+X11UseLocalhost yes
+PermitRootLogin no
+Protocol 2
+IgnoreRhosts yes
+HostbasedAuthentication no
+
