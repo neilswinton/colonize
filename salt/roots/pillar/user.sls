@@ -9,6 +9,9 @@ users:
         - TZ: "America/New_York"
       includes:
         - /home/juser/git/home/.bash_profile
+    packages:
+      - emacs
+      - xorg-x11-xauth
     ssh:
       private_keys:
         id_ecdsa: |
@@ -30,7 +33,7 @@ users:
         - transfer.fsckobjects: true
       repos:
         home:
-          - name: git@github.com:juser/home.git
+          - name: git@github.com:joeuser/home.git
           - user: juser
           - target: /home/juser/git/home
           - rev: master
