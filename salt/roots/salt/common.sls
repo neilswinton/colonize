@@ -26,6 +26,17 @@
 {%- set bash_profile = args.get('bash_profile', {}) %}
 {%- if bash_profile %}
 # {{ username }} Bash Profile
+
+{{ username }}_bash_profile_create:
+  file.managed:
+    - name: ~{{ username }}/.bash_profile
+    - user: {{ username }}
+    - group: {{ username }}
+    - mode: 644
+    - require:
+      - user: {{ username }}
+
+
 {%- for env in bash_profile.get('environment', []) %}
 # {{ env }}
 {%- for key,value in env.iteritems() %}
@@ -42,6 +53,19 @@
 {%- endfor %} {# for key,value in env.get('', {}).iteritems() #}
 {%- endfor %} {# for env in bash_profile.get('environment', [] #}
 
+{%- for item in bash_profile.get('include', []) %}
+# {{ item }}
+{{ username }}-bash_profile-{{ item }}:
+  file.accumulated:
+    - name: {{ username }}-bash_profile-accumulator
+    - filename: /home/{{ username }}/.bash_profile
+    - text: |
+         test -r {{ item }} && source {{ item }}
+         
+    - require_in:
+      - file: {{ username }}-bash_profile
+{%- endfor %} {# for item in bash_profile.get('include', []) #}
+
 {{ username }}-bash_profile:
   file.blockreplace:
     - name: /home/{{ username }}/.bash_profile
@@ -50,6 +74,8 @@
     - marker_end: "# end managed zone {{ sls }}:{{ username }}"
     - require:
       - user: {{ username }}
+      - file: {{ username }}_bash_profile_create
+
 {%- endif %} {# if bash_profile #}
 
 
