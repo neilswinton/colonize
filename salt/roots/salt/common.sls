@@ -30,6 +30,7 @@
 {{ username }}_bash_profile_create:
   file.managed:
     - name: ~{{ username }}/.bash_profile
+    - replace: False
     - user: {{ username }}
     - group: {{ username }}
     - mode: 644
@@ -45,9 +46,7 @@
   file.accumulated:
     - name: {{ username }}-bash_profile-accumulator
     - filename: /home/{{ username }}/.bash_profile
-    - text: |
-         export {{ key }}={{value}}
-         
+    - text: 'export {{ key }}={{value}}'
     - require_in:
       - file: {{ username }}-bash_profile
 {%- endfor %} {# for key,value in env.get('', {}).iteritems() #}
@@ -59,19 +58,28 @@
   file.accumulated:
     - name: {{ username }}-bash_profile-accumulator
     - filename: /home/{{ username }}/.bash_profile
-    - text: |
-         test -r {{ item }} && source {{ item }}
-         
+    - text: | 
+        test -r "{{ item }}" && source "{{ item }}"
     - require_in:
       - file: {{ username }}-bash_profile
 {%- endfor %} {# for item in bash_profile.get('include', []) #}
+
+{{ username }}-bash_profile-coda:
+  file.accumulated:
+    - name: {{ username }}-bash_profile-accumulator
+    - filename: /home/{{ username }}/.bash_profile
+    - text: |
+        # 
+        # 
+    - require_in:
+      - file: {{ username }}-bash_profile
 
 {{ username }}-bash_profile:
   file.blockreplace:
     - name: /home/{{ username }}/.bash_profile
     - append_if_not_found: true
-    - marker_start: "# begin managed zone {{ sls }}:{{ username }}"
-    - marker_end: "# end managed zone {{ sls }}:{{ username }}"
+    - marker_start: "# Begin salt managed zone {{ sls }}:{{ username }} -- DO NOT EDIT"
+    - marker_end: "# End salt managed zone {{ sls }}:{{ username }}"
     - require:
       - user: {{ username }}
       - file: {{ username }}_bash_profile_create
