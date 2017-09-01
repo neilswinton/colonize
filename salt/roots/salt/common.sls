@@ -137,16 +137,22 @@
 {%- for profile_name in active_profiles %}
 # profile: {{ profile_name }}
 {%- if profile_name in all_profiles %}
-# {{ all_profiles.get(profile_name) }}
+{%- set profile = all_profiles.get(profile_name) %}
+# {{ profile_name}}: {{ profile }}
+{%- set os_family_pkg = profile.get('os_family_pkg', {}) %}
+# {{ os_family_pkg }}
+# {{ salt['grains.filter_by'](os_family_pkg) }}
 {{ username }}_profile_{{ profile_name }}:
   pkg.installed:
     - require:
       - user: {{ username }}
     - pkgs:
-{%- for pkg in all_profiles.get(profile_name).get('pkg', []) %}
+{%- for pkg in profile.get('pkg', []) %}
       - {{ pkg }}
 {%- endfor %} {# for pkg in pkgs #}
-    
+{%- for pkg in salt['grains.filter_by'](os_family_pkg, default={'pkg': []})['pkg']  %}
+      - {{ pkg }}
+{%- endfor %} {# for pkg in pkgs #}
 {%- endif %}
 {%- endfor  %} {# for profile_name in active_profiles #}
 
