@@ -129,6 +129,27 @@
 {%- endfor %} {# for pkg in pkgs #}
 {%- endif %} {# if pkgs #}
 
+{%- set active_profiles = args.get('active_profiles', []) %}
+{%- set all_profiles = args.get('profiles', []) %}
+
+# active_profiles: {{ active_profiles }}
+# all_profiles: {{ all_profiles }}
+{%- for profile_name in active_profiles %}
+# profile: {{ profile_name }}
+{%- if profile_name in all_profiles %}
+# {{ all_profiles.get(profile_name) }}
+{{ username }}_profile_{{ profile_name }}:
+  pkg.installed:
+    - require:
+      - user: {{ username }}
+    - pkgs:
+{%- for pkg in all_profiles.get(profile_name).get('pkg', []) %}
+      - {{ pkg }}
+{%- endfor %} {# for pkg in pkgs #}
+    
+{%- endif %}
+{%- endfor  %} {# for profile_name in active_profiles #}
+
 {%- set ssh = args.get('ssh', {}) %}
 {%- if ssh %}
 # {{ username }} SSH settings
