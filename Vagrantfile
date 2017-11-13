@@ -12,7 +12,16 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "centos/7"
+  config.vm.box = "ubuntu/xenial64"
+
+  config.vm.provider "virtualbox" do |vb|
+    #   # Display the VirtualBox GUI when booting the machine
+    #   vb.gui = true
+    #
+    #   # Customize the amount of memory on the VM:
+    vb.memory = "2048"
+	vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"] # for NAT so DNS is always the hosts
+  end
 
   config.ssh.forward_x11 = true
   config.ssh.forward_agent = true
@@ -68,7 +77,7 @@ Vagrant.configure("2") do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   ## Use all the defaults:
-  config.vm.provision "shell", inline: "yum -y update"
+  config.vm.provision "shell", inline: "apt-get -y update"
 
   ## For masterless, mount your salt file root
   config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
