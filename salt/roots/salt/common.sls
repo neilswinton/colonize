@@ -40,10 +40,13 @@
 {%- set language_to_comment_character = {'lisp': ';', 'shell': '#'} %}
 {%- set snippet_language = snippet_info.get('language', 'shell') %}
 {%- set comment_character = language_to_comment_character[snippet_language] %}
+
+
 {{ username }}-{{ snippet_path }}:
   file.blockreplace:
     - name: ~{{ username }}/{{ snippet_path }}
-    - content: '{{ snippet_info.get("contents", "") }}'
+    - content: |
+        {{ snippet_info.get("contents", "") | indent(8) }}
     - append_if_not_found: true
     - marker_start: "{{ comment_character }} Begin salt managed zone {{ sls }}:{{ username }} -- DO NOT EDIT"
     - marker_end: "{{ comment_character }} End salt managed zone {{ sls }}:{{ username }}"
